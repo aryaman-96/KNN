@@ -1,1 +1,103 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, classification_report
+from sklearn.manifold import TSNE
 
+# Load the data (features and labels)
+data = pd.read_csv('C:/Users/aaron/Downloads/datasets_with_headers/indexed-TrainingDataMulti.csv')
+X = data.drop('marker', axis=1)  # Assuming 'marker' is the column name for labels
+y = data['marker']
+
+# Plot the distribution of label values
+plt.hist(y, bins=50)
+plt.title('Distribution of Label Values')
+plt.xlabel('Label Value')
+plt.ylabel('Count')
+plt.show()
+
+# Perform t-SNE visualization
+tsne = TSNE(n_components=2, random_state=42)
+X_tsne = tsne.fit_transform(X)
+
+# Create a DataFrame for t-SNE results
+tsne_df = pd.DataFrame(X_tsne, columns=['Dimension 1', 'Dimension 2'])
+tsne_df['label'] = y
+
+# Visualize t-SNE results
+sns.scatterplot(data=tsne_df, x='Dimension 1', y='Dimension 2', hue='label')
+plt.title('t-SNE Visualization')
+plt.show()
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Standardize the data
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Create the Random Forest classifier
+rf_model = RandomForestClassifier(n_estimators=200, max_depth=15)
+
+# Perform cross-validation
+cv_scores = cross_val_score(rf_model, X_train, y_train, cv=5)
+
+# Print the cross-validation scores
+print("Cross-validation Scores:", cv_scores)
+print("Average Cross-validation Score:", cv_scores.mean())
+
+# Train the Random Forest classifier
+rf_model.fit(X_train, y_train)
+
+# Make predictions on the training data
+train_predictions = rf_model.predict(X_train)
+
+# Compute training accuracy
+train_accuracy = accuracy_score(y_train, train_predictions)
+
+# Print the training accuracy
+print("Training Accuracy:", train_accuracy)
+
+# Make predictions on the testing data
+test_predictions = rf_model.predict(X_test)
+
+# Compute testing accuracy
+test_accuracy = accuracy_score(y_test, test_predictions)
+
+# Print the testing accuracy
+print("Testing Accuracy:", test_accuracy)
+
+# Compute confusion matrix
+confusion_mat = confusion_matrix(y_test, test_predictions)
+
+# Print classification report
+print('\n\nClassification Report:')
+print(classification_report(y_test, test_predictions))
+
+# Print confusion matrix
+print('\n\nConfusion Matrix:')
+print(confusion_matrix(y_test, test_predictions))
+
+# Print F1 score
+f1 = f1_score(y_test, test_predictions, average='weighted')
+print("F1 Score:", f1)
+
+# Load the test data
+df_test = pd.read_csv('C:/Users/aaron/Downloads/datasets_with_headers/indexed-TestingDataMulti.csv')
+df_test.head(2)
+
+# Standardize the test data
+test_data_std = scaler.transform(df_test)
+print(test_data_std.shape)
+
+# Predict labels for the test data
+test_data_predictions = rf_model.predict(test_data_std)
+test_data_predictions = pd.DataFrame(test_data_predictions, columns=['Predictions'])
+test_data_predictions
+
+# Save the predicted labels to a CSV file
+test_data_predictions.to_csv('C:/Users/aaron/Downloads/predictrf1.csv', index=False)
