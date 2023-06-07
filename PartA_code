@@ -14,14 +14,15 @@ df = pd.read_csv('C:/Users/aaron/Downloads/datasets_with_headers/indexed-Trainin
 print('Shape of data:', df.shape)
 df.head(3)
 
-# Class balance
-sns.countplot(df['marker'])
-plt.title('Number of Data Points for each class')
-plt.show()
-print(df['marker'].value_counts())
-
 X = df.drop('marker', axis=1)
 y = df['marker']
+
+# Plot the distribution of label values
+plt.hist(y, bins=50)
+plt.title('Distribution of Label Values')
+plt.xlabel('Label Value')
+plt.ylabel('Count')
+plt.show()
 
 # Create a function to visualize TSNE results
 def tsne_visualizer(data, label, title):
