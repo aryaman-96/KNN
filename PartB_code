@@ -22,8 +22,6 @@ plt.show()
 # Perform t-SNE visualization
 tsne = TSNE(n_components=2, random_state=42)
 X_tsne = tsne.fit_transform(X)
-
-# Create a DataFrame for t-SNE results
 tsne_df = pd.DataFrame(X_tsne, columns=['Dimension 1', 'Dimension 2'])
 tsne_df['label'] = y
 
@@ -45,8 +43,6 @@ rf_model = RandomForestClassifier(n_estimators=200, max_depth=15)
 
 # Perform cross-validation
 cv_scores = cross_val_score(rf_model, X_train, y_train, cv=5)
-
-# Print the cross-validation scores
 print("Cross-validation Scores:", cv_scores)
 print("Average Cross-validation Score:", cv_scores.mean())
 
@@ -58,8 +54,6 @@ train_predictions = rf_model.predict(X_train)
 
 # Compute training accuracy
 train_accuracy = accuracy_score(y_train, train_predictions)
-
-# Print the training accuracy
 print("Training Accuracy:", train_accuracy)
 
 # Make predictions on the testing data
@@ -67,18 +61,12 @@ test_predictions = rf_model.predict(X_test)
 
 # Compute testing accuracy
 test_accuracy = accuracy_score(y_test, test_predictions)
-
-# Print the testing accuracy
 print("Testing Accuracy:", test_accuracy)
 
-# Compute confusion matrix
+# Compute confusion matrix & classification report
 confusion_mat = confusion_matrix(y_test, test_predictions)
-
-# Print classification report
 print('\n\nClassification Report:')
 print(classification_report(y_test, test_predictions))
-
-# Print confusion matrix
 print('\n\nConfusion Matrix:')
 print(confusion_matrix(y_test, test_predictions))
 
